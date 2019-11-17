@@ -1,3 +1,16 @@
+basic.showIcon(IconNames.Heart)
+Rover.zeroServos()
+basic.showIcon(IconNames.SmallHeart)
+basic.pause(1000)
+basic.showIcon(IconNames.Heart)
+Rover.setWheelServos(40)
+basic.showIcon(IconNames.SmallHeart)
+basic.pause(1000)
+basic.showIcon(IconNames.Heart)
+Rover.setWheelServos(80)
+basic.pause(1000)
+basic.showIcon(IconNames.SmallHeart)
+Rover.zeroServos()
 basic.forever(function () {
 	
 })

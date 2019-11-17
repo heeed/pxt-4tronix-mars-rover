@@ -192,6 +192,10 @@ namespace Rover {
 
     //  SERVO BLOCKS
 
+    let wheelAngles = 0; // Variable to hold angles of the wheels
+    let motorServos = [Rover.getServoNumber(eServos.FL), Rover.getServoNumber(eServos.FR), Rover.getServoNumber(eServos.FL), Rover.getServoNumber(eServos.RL), Rover.getServoNumber(eServos.RR)];
+
+
     /**
       * Initialise all servos to Angle=0
       */
@@ -199,6 +203,8 @@ namespace Rover {
     //% block="Centre all servos"
     //% weight=100
     //% subcategory=Servos
+  
+
     export function zeroServos(): void {
         for (let i = 0; i < 16; i++)
             setServo(i, 0);
@@ -240,6 +246,47 @@ namespace Rover {
     }
 
     /**
+      * Set Wheel Servo Position by Angle
+      * @param servo Servo number (0 to 15)
+      * @param angle degrees to turn servo (-90 to +90)
+      */
+    //% blockId="setWheelServo"
+    //% block="set wheel servos to angle %angle"
+    //% weight=90
+    //% subcategory=Servos
+    export function setWheelServos(angle: number): void {
+        if (initI2C == false) {
+            initPCA();
+        }
+        // two bytes need setting for start and stop positions of the servo
+        // servos start at SERVOS (0x06) and are then consecutive blocks of 4 bytes
+        // the start position (always 0x00) is set during init for all servos
+        // the zero offset for each servo is read during init into the servoOffset array
+
+        let i2cData = pins.createBuffer(2);
+        /*let start = 0;*/
+        if (angle > 90)
+            angle = 90;
+        if (angle < -90)
+            angle = -90;
+        
+     
+        for (let motorServo = 0; motorServo <= motorServos.length; motorServo++) {
+           
+        let servo = motorServos[motorServo];
+        let stop = 369 + (angle + servoOffset[servo]) * 223 / 90;
+        i2cData[0] = SERVOS + servo * 4 + 2;	// Servo register
+        i2cData[1] = (stop & 0xff);		// low byte stop
+        pins.i2cWriteBuffer(PCA, i2cData, false);
+
+        i2cData[0] = SERVOS + servo * 4 + 3;	// Servo register
+        i2cData[1] = (stop >> 8);		// high byte stop
+        pins.i2cWriteBuffer(PCA, i2cData, false);
+        }
+    }
+
+
+    /**
       * Set Servo Offset then zero the servo
       * @param servo Servo number (0 to 15)
       * @param angle degrees to turn servo (-90 to +90)
@@ -267,12 +314,12 @@ namespace Rover {
     }
 
     //% blockId="motor_angle"
-    //% block="angle"
+    //% block="Wheel Angle"
     //% weight=80
     //% subcategory=Servos
 
-    export function getMotorAngle(): string {
-        return "hello";
+    export function getMotorAngle(): number {
+        return wheelAngles;
     }
 
 

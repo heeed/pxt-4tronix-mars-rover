@@ -12,7 +12,7 @@
         "README.md",
         "custom.ts"
     ],
-    "preferredEditor": "tsprj",
+    "preferredEditor": "blocksprj",
     "testFiles": [
         "test.ts"
     ]
